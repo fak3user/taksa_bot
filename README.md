@@ -7,43 +7,140 @@
 -   _участник_ - пользователь из _чата_, участвубщий в _счёте_
 -   _транзакция_ - запись о конкретной трате c указанием суммы, названия, заплатившего и _участников_
 
-## фичи
+## запросы и фичи
 
 -   создание нового _счета_ внутри _чата_
--   состояние _счета_
+    * Endpoint: /api/chats/{chatId}/accounts
+    * Type: POST
+    * JSON Request Body:
+        ```yaml
+        {
+            "title": "Trip to Rome",
+            "participants": ["@user1", "@user2"]
+        }
+        ```
+    * TypeScript object:
+        ```typescript
+        interface Account {
+            id: string;
+            title: string;
+            chatId: string;
+            participants: Participant[];
+            transactions: Transaction[];
+            closed: boolean;
+        }
+        ```
 
-```typescript
-{
-    id: string;
-    title: string; // название _счета_
-    transactions: []string // id всех _транзакций_ в _счете_
-    participants: []OrderParticipant{
-        id: string; // @username или tg_id
-    }
-}
-```
+-   состояние _счета_
+    * Endpoint: /api/accounts/{accountId}/summary
+    * Method: GET
+    * Typescript object: такой же как в создании нового _счета_
+-   добавление _участника_ в _счет_
+    * Endpoint: /api/accounts/{accountId}/participants
+    * Method: POST
+    * Request Body: 
+        ```yaml
+        {
+            "username": "string"
+        }
+        ```
+    * TypeScript object:
+        ```typescript
+        interface Participant {
+            id: string;
+            username: string;
+        }
+        ```
 
 -   добавление _транзакций_ для каждого из участников
+    * Endpoint: Endpoint: /api/accounts/{accountId}/transactions
+    * Method: POST
+    * Request Body:
+        ```yaml
+        {
+            "title": "string",
+            "amount": "number",
+            "splitType": "equal|exact|percentage",
+            "splits": [
+                {
+                "participantId": "string",
+                "amount": "number", // Used if splitType is 'exact'
+                "percentage": "number" // Used if splitType is 'percentage'
+                }
+            ]
+        }
+        ```
+    * TypeScript object:
+        ```typescript
+        interface Transaction {
+            id: string;
+            title: string;
+            notes?: string;
+            paidBy: string;
+            amount: number;
+            splitType: 'equal' | 'exact' | 'percentage';
+            splits: Split[];
+        }
 
-```typescript
-{
-    id: string;
-    title: string; // название _транзакции_
-    host: string; // @username или tg_id
-    sum: number; // сумма
-    notes?: string; // пометки
-    participants: []TransactionParticipant {
-        id: string; // @username или tg_id
-        sum: number // сумма для отдельного участника
-    }
-}
-```
+        interface Split {
+            participantId: string;
+            amount?: number;     // Optional because it's used only for 'exact' splitType
+            percentage?: number; // Optional because it's used only for 'percentage' splitType
+        }
+        ```
 
 -   редактирование _транзакции_
--   личный рассчет суммы
+    * Endpoint: /api/accounts/{accountId}/transactions/{transactionId}
+    * Method: PUT
+    * Request Body:
+        ```yaml
+        {
+            "title": "string",
+            "amount": "number",
+            "splitType": "equal|exact|percentage",
+            "splits": [
+                {
+                "participantId": "string",
+                "amount": "number", // Used if splitType is 'exact'
+                "percentage": "number" // Used if splitType is 'percentage'
+                }
+            ]
+        }
+        ```
+-   получение сумм _счета_
+    * Endpoint: /api/accounts/{accountId}/summary
+    * Method: GET
+    * TypeScript:
+        ```typescript
+        interface AccountSummary {
+            [participantId: string]: {
+                owes: {
+                // Amounts this participant owes to others, could be negative
+                [otherParticipantId: string]: number; 
+                };
+                // The total amount this participant owes to others, negative 
+                // if user owns, positive if other users owns to this user
+                totalOwed: number; 
+            };
+        };
+        ```
+-   получение списка _транзакций_
+    * Endpoint: /api/accounts/{accountId}/transactions
+    * Method: GET
 -   возможность указать, что
+TODO
 -   закрытие счета
+    * Endpoint: /api/accounts/{accountId}/close
+    * Method: PATCH
+    * Request Body:
+        ```yaml
+        {
+            "closed": "boolean"
+        }
+        ```
+    * TypeScript: тогглит в объекте аккаунта closed
 -   нотифаи для каждого участника при добавлении _транзакции_
+TODO
 
 ## пайплайн
 
