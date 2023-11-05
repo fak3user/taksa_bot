@@ -11,17 +11,21 @@
 
 -   создание нового _счета_ внутри _чата_
 -   состояние _счета_
-    `   
+
+```typescript
 {
     id: string;
     title: string; // название _счета_
-    transactions: []string // id всех _транзакций_ в _счете_  
+    transactions: []string // id всех _транзакций_ в _счете_
     participants: []OrderParticipant{
         id: string; // @username или tg_id
-    }      
-}`
+    }
+}
+```
+
 -   добавление _транзакций_ для каждого из участников
-    `    
+
+```typescript
 {
     id: string;
     title: string; // название _транзакции_
@@ -31,8 +35,10 @@
     participants: []TransactionParticipant {
         id: string; // @username или tg_id
         sum: number // сумма для отдельного участника
-    } 
-}`
+    }
+}
+```
+
 -   редактирование _транзакции_
 -   личный рассчет суммы
 -   возможность указать, что
