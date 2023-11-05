@@ -142,6 +142,74 @@ TODO
 -   нотифаи для каждого участника при добавлении _транзакции_
 TODO
 
+## База данных
+
+```json
+{
+  "definitions": {
+    "Participant": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "username": { "type": "string" }
+      },
+      "required": ["id", "username"]
+    },
+    "Split": {
+      "type": "object",
+      "properties": {
+        "participantId": { "type": "string" },
+        "amount": { "type": "number" },
+        "percentage": { "type": "number" }
+      },
+      "required": ["participantId"]
+    },
+    "Transaction": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "amount": { "type": "number" },
+        "paidBy": { "type": "string"},
+        "splitType": { "type": "string", "enum": ["equal", "exact", "percentage"] },
+        "splits": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/Split" }
+        }
+      },
+      "required": ["id", "title", "amount", "paidBy" "splitType", "splits"]
+    },
+    "Account": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "chatId": { "type": "string" },
+        "participants": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/Participant" }
+        },
+        "transactions": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/Transaction" }
+        },
+        "closed": { "type": "boolean", "default": false }
+      },
+      "required": ["id", "title", "chatId", "participants", "transactions"]
+    }
+  },
+  "type": "object",
+  "properties": {
+    "accounts": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/Account" }
+    }
+  },
+  "required": ["accounts"]
+}
+
+```
+
 ## пайплайн
 
 -   Создание нового счета:
