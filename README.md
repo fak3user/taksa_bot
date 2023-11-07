@@ -1,5 +1,11 @@
 # бот такса
 
+## develop
+
+Стек
+
+> go 1.21.3
+
 ## глоссарий
 
 -   _чат_ - отдельный чат в телеграме, куда добавлен бот
@@ -10,16 +16,14 @@
 ## запросы и фичи
 
 -   создание нового _счета_ внутри _чата_
-    * Endpoint: /api/chats/{chatId}/accounts
-    * Type: POST
-    * JSON Request Body:
+
+    -   Endpoint: /api/chats/{chatId}/accounts
+    -   Type: POST
+    -   JSON Request Body:
         ```yaml
-        {
-            "title": "Trip to Rome",
-            "participants": ["@user1", "@user2"]
-        }
+        { "title": "Trip to Rome", "participants": ["@user1", "@user2"] }
         ```
-    * TypeScript object:
+    -   TypeScript object:
         ```typescript
         interface Account {
             id: string;
@@ -32,19 +36,18 @@
         ```
 
 -   состояние _счета_
-    * Endpoint: /api/accounts/{accountId}/summary
-    * Method: GET
-    * Typescript object: такой же как в создании нового _счета_
+    -   Endpoint: /api/accounts/{accountId}/summary
+    -   Method: GET
+    -   Typescript object: такой же как в создании нового _счета_
 -   добавление _участника_ в _счет_
-    * Endpoint: /api/accounts/{accountId}/participants
-    * Method: POST
-    * Request Body: 
+
+    -   Endpoint: /api/accounts/{accountId}/participants
+    -   Method: POST
+    -   Request Body:
         ```yaml
-        {
-            "username": "string"
-        }
+        { "username": "string" }
         ```
-    * TypeScript object:
+    -   TypeScript object:
         ```typescript
         interface Participant {
             id: string;
@@ -53,9 +56,10 @@
         ```
 
 -   добавление _транзакций_ для каждого из участников
-    * Endpoint: Endpoint: /api/accounts/{accountId}/transactions
-    * Method: POST
-    * Request Body:
+
+    -   Endpoint: Endpoint: /api/accounts/{accountId}/transactions
+    -   Method: POST
+    -   Request Body:
         ```yaml
         {
             "title": "string",
@@ -70,7 +74,8 @@
             ]
         }
         ```
-    * TypeScript object:
+    -   TypeScript object:
+
         ```typescript
         interface Transaction {
             id: string;
@@ -78,21 +83,21 @@
             notes?: string;
             paidBy: string;
             amount: number;
-            splitType: 'equal' | 'exact' | 'percentage';
+            splitType: "equal" | "exact" | "percentage";
             splits: Split[];
         }
 
         interface Split {
             participantId: string;
-            amount?: number;     // Optional because it's used only for 'exact' splitType
+            amount?: number; // Optional because it's used only for 'exact' splitType
             percentage?: number; // Optional because it's used only for 'percentage' splitType
         }
         ```
 
 -   редактирование _транзакции_
-    * Endpoint: /api/accounts/{accountId}/transactions/{transactionId}
-    * Method: PUT
-    * Request Body:
+    -   Endpoint: /api/accounts/{accountId}/transactions/{transactionId}
+    -   Method: PUT
+    -   Request Body:
         ```yaml
         {
             "title": "string",
@@ -108,39 +113,37 @@
         }
         ```
 -   получение сумм _счета_
-    * Endpoint: /api/accounts/{accountId}/summary
-    * Method: GET
-    * TypeScript:
+    -   Endpoint: /api/accounts/{accountId}/summary
+    -   Method: GET
+    -   TypeScript:
         ```typescript
         interface AccountSummary {
             [participantId: string]: {
                 owes: {
-                // Amounts this participant owes to others, could be negative
-                [otherParticipantId: string]: number; 
+                    // Amounts this participant owes to others, could be negative
+                    [otherParticipantId: string]: number;
                 };
-                // The total amount this participant owes to others, negative 
+                // The total amount this participant owes to others, negative
                 // if user owns, positive if other users owns to this user
-                totalOwed: number; 
+                totalOwed: number;
             };
-        };
-        ```
--   получение списка _транзакций_
-    * Endpoint: /api/accounts/{accountId}/transactions
-    * Method: GET
--   возможность указать, что
-TODO
--   закрытие счета
-    * Endpoint: /api/accounts/{accountId}/close
-    * Method: PATCH
-    * Request Body:
-        ```yaml
-        {
-            "closed": "boolean"
         }
         ```
-    * TypeScript: тогглит в объекте аккаунта closed
+-   получение списка _транзакций_
+    -   Endpoint: /api/accounts/{accountId}/transactions
+    -   Method: GET
+-   возможность указать, что
+    TODO
+-   закрытие счета
+    -   Endpoint: /api/accounts/{accountId}/close
+    -   Method: PATCH
+    -   Request Body:
+        ```yaml
+        { "closed": "boolean" }
+        ```
+    -   TypeScript: тогглит в объекте аккаунта closed
 -   нотифаи для каждого участника при добавлении _транзакции_
-TODO
+    TODO
 
 ## База данных
 
