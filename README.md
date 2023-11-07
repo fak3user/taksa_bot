@@ -4,16 +4,16 @@
 
 Стек среды разработки
 
-> ```
-> go 1.21.3
-> entr
-> ```
+```
+go 1.21.3
+entr
+```
 
 Для поднятия дев-окружения, находясь в папке с проектом, нужно запустить:
 
-> ```
-> git ls-files -cdmo --exclude-standard | entr -cr go run main.go
-> ```
+```
+git ls-files -cdmo --exclude-standard | entr -cr go run main.go
+```
 
 ## глоссарий
 
