@@ -8,7 +8,6 @@ import (
 
 type Envs struct {
 	BotToken string
-	GptToken string
 	DbUri    string
 }
 
