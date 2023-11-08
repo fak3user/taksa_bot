@@ -1,7 +1,9 @@
 package main
 
 import (
+	"log"
 	"taksa/bot"
+	"taksa/db"
 
 	"github.com/davecgh/go-spew/spew"
 
@@ -9,6 +11,7 @@ import (
 )
 
 func main() {
+	db.Init()
 	err := <-bot.Init()
 	if err != nil {
 		panic(err)
@@ -22,11 +25,11 @@ func main() {
 
 	for update := range updates {
 		var msg tgbotapi.MessageConfig
-		// log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
 
 		spew.Dump(update)
 
 		if update.Message != nil {
+			log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
 
 			if update.Message.Chat.Type == "group" {
 
