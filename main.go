@@ -44,8 +44,12 @@ func main() {
 				msg = tgbotapi.NewMessage(update.Message.From.ID, "test")
 				if update.Message.IsCommand() {
 					switch update.Message.Command() {
-					case "start":
-						msg.Text = "Hello!"
+					case "start": // when user starts a new private chat with bot
+						if ok := bot.StartPrivateChat(update.Message.From.ID); !ok {
+							// handle an error
+						}
+						msg = tgbotapi.NewMessage(update.Message.Chat.ID, "Hello you")
+
 					default:
 						continue
 					}

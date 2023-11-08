@@ -1,6 +1,6 @@
 package bot
 
-func StartBot(userId int64) bool {
+func StartPrivateChat(userId int64) bool {
 	/*
 	* @Todo:
 	*
