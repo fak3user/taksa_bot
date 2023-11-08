@@ -21,9 +21,17 @@ func main() {
 	updates := tgbot.GetUpdatesChan(u)
 
 	for update := range updates {
+		fmt.Println(update)
 		log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
-		echoMsg := tgbotapi.NewMessage(update.Message.From.ID, update.Message.Text)
-		tgbot.Send(echoMsg)
+
+		if update.Message.Chat.Type == "group" {
+			echoMsg := tgbotapi.NewMessage(update.Message.Chat.ID, "test")
+			echoMsg.ReplyToMessageID = update.Message.MessageID
+			tgbot.Send(echoMsg)
+		} else {
+			echoMsg := tgbotapi.NewMessage(update.Message.From.ID, "test")
+			tgbot.Send(echoMsg)
+		}
+
 	}
-	fmt.Println("321")
 }
