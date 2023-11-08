@@ -52,7 +52,6 @@ func main() {
 							// handle an error
 						}
 						msg = tgbotapi.NewMessage(update.Message.Chat.ID, "Hello you")
-
 					default:
 						continue
 					}
