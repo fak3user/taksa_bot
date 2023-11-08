@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"
-	"log"
 	"taksa/bot"
+
+	"github.com/davecgh/go-spew/spew"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -14,23 +14,47 @@ func main() {
 		panic(err)
 	}
 
-	tgbot := bot.GetBot()
+	botInstance := bot.GetBot()
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60
 
-	updates := tgbot.GetUpdatesChan(u)
+	updates := botInstance.GetUpdatesChan(u)
 
 	for update := range updates {
-		fmt.Println(update)
-		log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
+		var msg tgbotapi.MessageConfig
+		// log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
 
-		if update.Message.Chat.Type == "group" {
-			echoMsg := tgbotapi.NewMessage(update.Message.Chat.ID, "test")
-			echoMsg.ReplyToMessageID = update.Message.MessageID
-			tgbot.Send(echoMsg)
-		} else {
-			echoMsg := tgbotapi.NewMessage(update.Message.From.ID, "test")
-			tgbot.Send(echoMsg)
+		spew.Dump(update)
+
+		if update.Message != nil {
+
+			if update.Message.Chat.Type == "group" {
+
+				if update.Message.NewChatMembers != nil && update.Message.NewChatMembers[0].ID == botInstance.Self.ID { // when bot was added to chat
+					if ok := bot.AddToChat(update.Message.Chat.ID); !ok {
+						// handle an error
+					}
+					msg = tgbotapi.NewMessage(update.Message.Chat.ID, "Taksa bot is here")
+				} else {
+					msg = tgbotapi.NewMessage(update.Message.Chat.ID, "test")
+				}
+				msg.ReplyToMessageID = update.Message.MessageID
+				botInstance.Send(msg)
+			} else {
+				msg = tgbotapi.NewMessage(update.Message.From.ID, "test")
+				if update.Message.IsCommand() {
+					switch update.Message.Command() {
+					case "start":
+						msg.Text = "Hello!"
+					default:
+						continue
+					}
+
+				} else {
+
+				}
+				botInstance.Send(msg)
+			}
 		}
 
 	}
