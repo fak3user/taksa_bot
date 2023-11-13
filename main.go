@@ -5,8 +5,6 @@ import (
 	"taksa/bot"
 	"taksa/db"
 
-	"github.com/davecgh/go-spew/spew"
-
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
@@ -26,18 +24,21 @@ func main() {
 	for update := range updates {
 		var msg tgbotapi.MessageConfig
 
-		spew.Dump(update)
-
 		if update.Message != nil {
 			log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
 
 			if update.Message.Chat.Type == "group" {
 
 				if update.Message.NewChatMembers != nil && update.Message.NewChatMembers[0].ID == botInstance.Self.ID { // when bot was added to chat
-					if ok := bot.AddToChat(update.Message.Chat.ID); !ok {
-						// handle an error
+					ok, err := bot.AddToChat(update.Message.Chat)
+					if err != nil {
+						panic(err)
 					}
-					msg = tgbotapi.NewMessage(update.Message.Chat.ID, "Taksa bot is here")
+					if ok {
+						msg = tgbotapi.NewMessage(update.Message.Chat.ID, "Taksa bot is here")
+					} else {
+						msg = tgbotapi.NewMessage(update.Message.Chat.ID, "Taksa bot is already here")
+					}
 				} else {
 					msg = tgbotapi.NewMessage(update.Message.Chat.ID, "test")
 				}

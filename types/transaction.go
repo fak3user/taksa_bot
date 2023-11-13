@@ -9,6 +9,5 @@ type Transaction struct {
 	SplitType string               `bson:"split_type"`
 	PaidBy    primitive.ObjectID   `bson:"paid_by"`
 	Splits    []primitive.ObjectID `bson:"splits"`
-
-	Events []primitive.ObjectID `bson:"events"`
+	Events    []primitive.ObjectID `bson:"events"`
 }
