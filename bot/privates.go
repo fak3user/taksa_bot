@@ -1,6 +1,15 @@
 package bot
 
-func StartPrivateChat(userId int64) bool {
+import (
+	"context"
+	"taksa/db"
+	"taksa/types"
+
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"go.mongodb.org/mongo-driver/bson"
+)
+
+func StartPrivateChat(user *tgbotapi.User) (bool, error) {
 	/*
 	* @Todo:
 	*
@@ -10,9 +19,25 @@ func StartPrivateChat(userId int64) bool {
 	*
 	 */
 
-	if true { // onSuccess
-		return true
-	} else { // onError
-		return false
+	collection := db.GetCollection("users")
+
+	filter := bson.M{"username": user.UserName}
+	var existingParticipant types.Participant
+
+	err := collection.FindOne(context.TODO(), filter).Decode(&existingParticipant)
+	if err == nil {
+		return false, nil
 	}
+
+	newChat := types.Participant{
+		Username: user.UserName,
+		Fullname: user.FirstName + " " + user.LastName,
+	}
+	// Insert user document into MongoDB
+	_, err = collection.InsertOne(context.TODO(), newChat)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
 }

@@ -19,7 +19,7 @@ func AddToChat(chat *tgbotapi.Chat) (bool, error) {
 	*
 	 */
 
-	collection, _ := db.GetCollection("chats")
+	collection := db.GetCollection("chats")
 
 	filter := bson.M{"tg_id": chat.ID}
 	var existingChat types.Chat
