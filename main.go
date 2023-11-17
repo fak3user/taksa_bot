@@ -56,11 +56,11 @@ func main() {
 				if update.Message.IsCommand() {
 					switch update.Message.Command() {
 					case "start": // when user starts a new private chat with bot
-						ok, err := bot.StartPrivateChat(update.Message.From)
+						isNewUser, err := bot.StartPrivateChat(update.Message.From)
 						if err != nil {
 							// handle an error
 						}
-						if ok {
+						if isNewUser {
 							msg = tgbotapi.NewMessage(update.Message.Chat.ID, texts.MessageWelcomePrivateChat)
 						} else {
 							msg = tgbotapi.NewMessage(update.Message.Chat.ID, texts.MessageWelcomePrivateChatWelcomeBack)
