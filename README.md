@@ -28,7 +28,7 @@ git ls-files -cdmo --exclude-standard | entr -cr go run main.go
 
 -   создание нового _счета_ внутри _чата_
 
-    -   Endpoint: /api/chats/{chatId}/events
+    -   Endpoint: /api/chats/{chatId}/Accounts
     -   Type: POST
     -   JSON Request Body:
         ```yaml
@@ -36,7 +36,7 @@ git ls-files -cdmo --exclude-standard | entr -cr go run main.go
         ```
     -   TypeScript object:
         ```typescript
-        interface Event {
+        interface Account {
             id: string;
             title: string;
             chatId: string;
@@ -47,12 +47,12 @@ git ls-files -cdmo --exclude-standard | entr -cr go run main.go
         ```
 
 -   состояние _счета_
-    -   Endpoint: /api/events/{eventId}/summary
+    -   Endpoint: /api/Accounts/{AccountId}/summary
     -   Method: GET
     -   Typescript object: такой же как в создании нового _счета_
 -   добавление _участника_ в _счет_
 
-    -   Endpoint: /api/events/{eventId}/participants
+    -   Endpoint: /api/Accounts/{AccountId}/participants
     -   Method: POST
     -   Request Body:
         ```yaml
@@ -68,7 +68,7 @@ git ls-files -cdmo --exclude-standard | entr -cr go run main.go
 
 -   добавление _транзакций_ для каждого из участников
 
-    -   Endpoint: Endpoint: /api/events/{eventId}/transactions
+    -   Endpoint: Endpoint: /api/Accounts/{AccountId}/transactions
     -   Method: POST
     -   Request Body:
         ```yaml
@@ -106,7 +106,7 @@ git ls-files -cdmo --exclude-standard | entr -cr go run main.go
         ```
 
 -   редактирование _транзакции_
-    -   Endpoint: /api/events/{eventId}/transactions/{transactionId}
+    -   Endpoint: /api/Accounts/{AccountId}/transactions/{transactionId}
     -   Method: PUT
     -   Request Body:
         ```yaml
@@ -124,11 +124,11 @@ git ls-files -cdmo --exclude-standard | entr -cr go run main.go
         }
         ```
 -   получение сумм _счета_
-    -   Endpoint: /api/events/{eventId}/summary
+    -   Endpoint: /api/Accounts/{AccountId}/summary
     -   Method: GET
     -   TypeScript:
         ```typescript
-        interface EventSummary {
+        interface AccountSummary {
             [participantId: string]: {
                 owes: {
                     // Amounts this participant owes to others, could be negative
@@ -141,12 +141,12 @@ git ls-files -cdmo --exclude-standard | entr -cr go run main.go
         }
         ```
 -   получение списка _транзакций_
-    -   Endpoint: /api/events/{eventId}/transactions
+    -   Endpoint: /api/Accounts/{AccountId}/transactions
     -   Method: GET
 -   возможность указать, что
     TODO
 -   закрытие счета
-    -   Endpoint: /api/events/{eventId}/close
+    -   Endpoint: /api/Accounts/{AccountId}/close
     -   Method: PATCH
     -   Request Body:
         ```yaml
@@ -193,7 +193,7 @@ git ls-files -cdmo --exclude-standard | entr -cr go run main.go
       },
       "required": ["id", "title", "amount", "paidBy" "splitType", "splits"]
     },
-    "Event": {
+    "Account": {
       "type": "object",
       "properties": {
         "id": { "type": "string" },
@@ -214,12 +214,12 @@ git ls-files -cdmo --exclude-standard | entr -cr go run main.go
   },
   "type": "object",
   "properties": {
-    "events": {
+    "Accounts": {
       "type": "array",
-      "items": { "$ref": "#/definitions/Event" }
+      "items": { "$ref": "#/definitions/Account" }
     }
   },
-  "required": ["events"]
+  "required": ["Accounts"]
 }
 
 ```

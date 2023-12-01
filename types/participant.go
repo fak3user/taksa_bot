@@ -7,5 +7,5 @@ type Participant struct {
 	Username      string               `bson:"username"`
 	Fullname      string               `bson:"fullname"`
 	Notifications []primitive.ObjectID `bson:"notifications"`
-	Events        []primitive.ObjectID `bson:"events"`
+	Accounts        []primitive.ObjectID `bson:"Accounts"`
 }

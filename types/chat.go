@@ -6,5 +6,5 @@ type Chat struct {
 	ID     primitive.ObjectID   `bson:"_id,omitempty"`
 	TgID   int64                `bson:"tg_id"`
 	Name   string               `bson:"name"`
-	Events []primitive.ObjectID `bson:"events"`
+	Accounts []primitive.ObjectID `bson:"Accounts"`
 }
