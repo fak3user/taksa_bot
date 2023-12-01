@@ -27,10 +27,10 @@ func GetClientOptions() *options.ClientOptions {
 	return clientOptions
 }
 
-func GetCollection(collection string) (*mongo.Collection, error) {
+func GetCollection(collection string) *mongo.Collection {
 	client := GetMongoClient()
 
-	return client.Database("taksa").Collection(collection), nil
+	return client.Database("taksa").Collection(collection)
 }
 
 func Init() {

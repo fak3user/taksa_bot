@@ -1,11 +1,11 @@
 package main
 
 import (
-	"log"
+	_"log"
 	"taksa/bot"
 	"taksa/db"
-
-	"github.com/davecgh/go-spew/spew"
+	_"taksa/texts"
+	"taksa/handlers"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -22,46 +22,6 @@ func main() {
 	u.Timeout = 60
 
 	updates := botInstance.GetUpdatesChan(u)
+	handlers.HandleUpdate(updates, botInstance)
 
-	for update := range updates {
-		var msg tgbotapi.MessageConfig
-
-		spew.Dump(update)
-
-		if update.Message != nil {
-			log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
-
-			if update.Message.Chat.Type == "group" {
-
-				if update.Message.NewChatMembers != nil && update.Message.NewChatMembers[0].ID == botInstance.Self.ID { // when bot was added to chat
-					if ok := bot.AddToChat(update.Message.Chat.ID); !ok {
-						// handle an error
-					}
-					msg = tgbotapi.NewMessage(update.Message.Chat.ID, "Taksa bot is here")
-				} else {
-					msg = tgbotapi.NewMessage(update.Message.Chat.ID, "test")
-				}
-				msg.ReplyToMessageID = update.Message.MessageID
-				botInstance.Send(msg)
-			} else {
-				msg = tgbotapi.NewMessage(update.Message.From.ID, "test")
-				if update.Message.IsCommand() {
-					switch update.Message.Command() {
-					case "start": // when user starts a new private chat with bot
-						if ok := bot.StartPrivateChat(update.Message.From.ID); !ok {
-							// handle an error
-						}
-						msg = tgbotapi.NewMessage(update.Message.Chat.ID, "Hello you")
-					default:
-						continue
-					}
-
-				} else {
-
-				}
-				botInstance.Send(msg)
-			}
-		}
-
-	}
 }

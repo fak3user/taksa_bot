@@ -1,18 +1,19 @@
 package bot
 
-func StartPrivateChat(userId int64) bool {
-	/*
-	* @Todo:
-	*
-	* Реализовать запись в базу,
-	* обработчики на success и error от базы
-	* написаны ниже
-	*
-	 */
+import (
+	"taksa/db"
 
-	if true { // onSuccess
-		return true
-	} else { // onError
-		return false
+	"github.com/davecgh/go-spew/spew"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+)
+
+func StartPrivateChat(user *tgbotapi.User) (bool, error) {
+	newOrExistingUser, isNew, err := db.AddUserAndCheckIfExist(user)
+	if err != nil {
+		return false, err
 	}
+
+	spew.Dump(newOrExistingUser)
+
+	return isNew, nil
 }
