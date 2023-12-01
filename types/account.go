@@ -8,5 +8,5 @@ type Account struct {
 	Description  string               `bson:"description"`
 	Opened       bool                 `bson:"opened"`
 	Transactions []primitive.ObjectID `bson:"transactions"`
-	Participants []primitive.ObjectID `bson:"participants"`
+	Users []primitive.ObjectID `bson:"users"`
 }
