@@ -28,31 +28,31 @@ git ls-files -cdmo --exclude-standard | entr -cr go run main.go
 
 -   создание нового _счета_ внутри _чата_
 
-    -   Endpoint: /api/chats/{chatId}/Accounts
+    -   Endpoint: /api/chats/{chatId}/events
     -   Type: POST
     -   JSON Request Body:
         ```yaml
-        { "title": "Trip to Rome", "participants": ["@user1", "@user2"] }
+        { "title": "Trip to Rome", "users": ["@user1", "@user2"] }
         ```
     -   TypeScript object:
         ```typescript
-        interface Account {
+        interface Event {
             id: string;
             title: string;
             chatId: string;
-            participants: Participant[];
+            users: User[];
             transactions: Transaction[];
             closed: boolean;
         }
         ```
 
 -   состояние _счета_
-    -   Endpoint: /api/Accounts/{AccountId}/summary
+    -   Endpoint: /api/events/{eventId}/summary
     -   Method: GET
     -   Typescript object: такой же как в создании нового _счета_
 -   добавление _участника_ в _счет_
 
-    -   Endpoint: /api/Accounts/{AccountId}/participants
+    -   Endpoint: /api/events/{eventId}/users
     -   Method: POST
     -   Request Body:
         ```yaml
@@ -60,7 +60,7 @@ git ls-files -cdmo --exclude-standard | entr -cr go run main.go
         ```
     -   TypeScript object:
         ```typescript
-        interface Participant {
+        interface User {
             id: string;
             username: string;
         }
@@ -68,7 +68,7 @@ git ls-files -cdmo --exclude-standard | entr -cr go run main.go
 
 -   добавление _транзакций_ для каждого из участников
 
-    -   Endpoint: Endpoint: /api/Accounts/{AccountId}/transactions
+    -   Endpoint: Endpoint: /api/events/{eventId}/transactions
     -   Method: POST
     -   Request Body:
         ```yaml
@@ -78,7 +78,7 @@ git ls-files -cdmo --exclude-standard | entr -cr go run main.go
             "splitType": "equal|exact|percentage",
             "splits": [
                 {
-                "participantId": "string",
+                "userId": "string",
                 "amount": "number", // Used if splitType is 'exact'
                 "percentage": "number" // Used if splitType is 'percentage'
                 }
@@ -99,14 +99,14 @@ git ls-files -cdmo --exclude-standard | entr -cr go run main.go
         }
 
         interface Split {
-            participantId: string;
+            userId: string;
             amount?: number; // Optional because it's used only for 'exact' splitType
             percentage?: number; // Optional because it's used only for 'percentage' splitType
         }
         ```
 
 -   редактирование _транзакции_
-    -   Endpoint: /api/Accounts/{AccountId}/transactions/{transactionId}
+    -   Endpoint: /api/events/{eventId}/transactions/{transactionId}
     -   Method: PUT
     -   Request Body:
         ```yaml
@@ -116,7 +116,7 @@ git ls-files -cdmo --exclude-standard | entr -cr go run main.go
             "splitType": "equal|exact|percentage",
             "splits": [
                 {
-                "participantId": "string",
+                "userId": "string",
                 "amount": "number", // Used if splitType is 'exact'
                 "percentage": "number" // Used if splitType is 'percentage'
                 }
@@ -124,29 +124,29 @@ git ls-files -cdmo --exclude-standard | entr -cr go run main.go
         }
         ```
 -   получение сумм _счета_
-    -   Endpoint: /api/Accounts/{AccountId}/summary
+    -   Endpoint: /api/events/{eventId}/summary
     -   Method: GET
     -   TypeScript:
         ```typescript
-        interface AccountSummary {
-            [participantId: string]: {
+        interface EventSummary {
+            [userId: string]: {
                 owes: {
-                    // Amounts this participant owes to others, could be negative
-                    [otherParticipantId: string]: number;
+                    // Amounts this user owes to others, could be negative
+                    [otherUserId: string]: number;
                 };
-                // The total amount this participant owes to others, negative
+                // The total amount this user owes to others, negative
                 // if user owns, positive if other users owns to this user
                 totalOwed: number;
             };
         }
         ```
 -   получение списка _транзакций_
-    -   Endpoint: /api/Accounts/{AccountId}/transactions
+    -   Endpoint: /api/events/{eventId}/transactions
     -   Method: GET
 -   возможность указать, что
     TODO
 -   закрытие счета
-    -   Endpoint: /api/Accounts/{AccountId}/close
+    -   Endpoint: /api/events/{eventId}/close
     -   Method: PATCH
     -   Request Body:
         ```yaml
@@ -161,7 +161,7 @@ git ls-files -cdmo --exclude-standard | entr -cr go run main.go
 ```json
 {
   "definitions": {
-    "Participant": {
+    "User": {
       "type": "object",
       "properties": {
         "id": { "type": "string" },
@@ -172,11 +172,11 @@ git ls-files -cdmo --exclude-standard | entr -cr go run main.go
     "Split": {
       "type": "object",
       "properties": {
-        "participantId": { "type": "string" },
+        "userId": { "type": "string" },
         "amount": { "type": "number" },
         "percentage": { "type": "number" }
       },
-      "required": ["participantId"]
+      "required": ["userId"]
     },
     "Transaction": {
       "type": "object",
@@ -193,15 +193,15 @@ git ls-files -cdmo --exclude-standard | entr -cr go run main.go
       },
       "required": ["id", "title", "amount", "paidBy" "splitType", "splits"]
     },
-    "Account": {
+    "Event": {
       "type": "object",
       "properties": {
         "id": { "type": "string" },
         "title": { "type": "string" },
         "chatId": { "type": "string" },
-        "participants": {
+        "users": {
           "type": "array",
-          "items": { "$ref": "#/definitions/Participant" }
+          "items": { "$ref": "#/definitions/User" }
         },
         "transactions": {
           "type": "array",
@@ -209,17 +209,17 @@ git ls-files -cdmo --exclude-standard | entr -cr go run main.go
         },
         "closed": { "type": "boolean", "default": false }
       },
-      "required": ["id", "title", "chatId", "participants", "transactions"]
+      "required": ["id", "title", "chatId", "users", "transactions"]
     }
   },
   "type": "object",
   "properties": {
-    "Accounts": {
+    "events": {
       "type": "array",
-      "items": { "$ref": "#/definitions/Account" }
+      "items": { "$ref": "#/definitions/Event" }
     }
   },
-  "required": ["Accounts"]
+  "required": ["events"]
 }
 
 ```
