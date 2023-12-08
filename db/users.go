@@ -8,32 +8,32 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func AddUserAndCheckIfExist(user *tgbotapi.User) (types.Participant, bool, error) {
+func AddUserAndCheckIfExist(user *tgbotapi.User) (types.User, bool, error) {
 	collection := GetCollection("users")
 
 	filter := bson.M{"username": user.UserName}
-	var existingParticipant types.Participant
+	var existingUser types.User
 
-	err := collection.FindOne(context.TODO(), filter).Decode(&existingParticipant)
+	err := collection.FindOne(context.TODO(), filter).Decode(&existingUser)
 	if err == nil {
-		return existingParticipant, false, nil
+		return existingUser, false, nil
 	}
 
-	newParticipant := types.Participant{
+	newUser := types.User{
 		Username: user.UserName,
 		Fullname: user.FirstName + " " + user.LastName,
 	}
 
 	// Insert user document into MongoDB
-	insertResult, err := collection.InsertOne(context.TODO(), newParticipant)
+	insertResult, err := collection.InsertOne(context.TODO(), newUser)
 	if err != nil {
-		return existingParticipant, false, err
+		return existingUser, false, err
 	}
 
 	filter = bson.M{"_id": insertResult.InsertedID}
-	var insertedParticipant types.Participant
+	var insertedUser types.User
 
-	collection.FindOne(context.TODO(), filter).Decode(&insertedParticipant)
+	collection.FindOne(context.TODO(), filter).Decode(&insertedUser)
 
-	return insertedParticipant, true, nil
+	return insertedUser, true, nil
 }
